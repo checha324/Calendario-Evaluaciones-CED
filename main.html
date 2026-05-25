@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Calendario de Evaluaciones V2 - Colegio CED</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+    <header>
+        <h1>Colegio CED - Planificador V2</h1>
+        <div id="status" style="color: var(--text-muted); font-size: 0.9rem;">Plataforma lista.</div>
+    </header>
+
+    <div class="container">
+        <!-- TABS NAVEGACIÓN -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('config')">⚙️ 1. Parámetros</button>
+            <button class="tab-btn" onclick="switchTab('careers')">🎓 2. Carreras</button>
+            <button class="tab-btn" onclick="switchTab('courses')">📚 3. Cursos</button>
+            <button class="tab-btn" onclick="switchTab('manual')">📌 4. Cursos Comunes</button>
+            <button class="tab-btn" onclick="switchTab('calendar')" style="background-color: #10b981; color: white; margin-left: auto;">📅 Generar Calendario</button>
+        </div>
+
+        <!-- 1. PARÁMETROS -->
+        <div id="tab-config" class="tab-content active">
+            <div class="card" style="max-width: 600px; margin: 0 auto;">
+                <h2 class="card-title">Configuración General</h2>
+                <div class="form-group">
+                    <label>Fecha de Inicio de Evaluaciones</label>
+                    <input type="date" id="startDate" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Cantidad de Exámenes por Día</label>
+                    <select id="examsPerDay" class="form-control" onchange="updateManualOptions()">
+                        <option value="2">2 Exámenes diarios</option>
+                        <option value="3">3 Exámenes diarios</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Ubicación del Recreo / Receso</label>
+                    <select id="recessPosition" class="form-control">
+                        <option value="1">Después del 1er examen</option>
+                        <option value="2">Después del 2do examen</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="switchTab('careers')" style="width: 100%; margin-top: 1rem;">Siguiente: Gestionar Carreras ➔</button>
+            </div>
+        </div>
+
+        <!-- 2. CARRERAS -->
+        <div id="tab-careers" class="tab-content">
+            <div class="grid-2">
+                <div class="card">
+                    <h2 class="card-title">Agregar Nueva Carrera</h2>
+                    <form id="formCareer" onsubmit="addCareer(event)">
+                        <div class="form-group">
+                            <label>Nombre de la Carrera</label>
+                            <input type="text" id="careerName" class="form-control" placeholder="Ej. Bachillerato en Ciencias..." required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">➕ Agregar Carrera</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h2 class="card-title">Carreras Registradas</h2>
+                    <ul id="careersList" class="data-list">
+                        <!-- Renderizado por JS -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. CURSOS -->
+        <div id="tab-courses" class="tab-content">
+            <div class="grid-2">
+                <div class="card">
+                    <h2 class="card-title">Agregar Nuevo Curso</h2>
+                    <form id="formCourse" onsubmit="addCourse(event)">
+                        <div class="form-group">
+                            <label>Nombre del Curso</label>
+                            <input type="text" id="courseName" class="form-control" placeholder="Ej. Matemáticas" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Catedrático (Profesor)</label>
+                            <input type="text" id="courseTeacher" class="form-control" placeholder="Ej. Prof. González" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Asignar a Carreras (Selecciona una o varias)</label>
+                            <div class="checkbox-group" id="courseCareersCheckboxes">
+                                <!-- Renderizado por JS -->
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">➕ Agregar Curso</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h2 class="card-title">Cursos Registrados</h2>
+                    <ul id="coursesList" class="data-list" style="max-height: 500px; overflow-y: auto;">
+                        <!-- Renderizado por JS -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. CURSOS COMUNES (ASIGNACIÓN MANUAL) -->
+        <div id="tab-manual" class="tab-content">
+            <div class="card">
+                <h2 class="card-title">
+                    Programación de Cursos Comunes
+                    <span style="font-size: 0.9rem; font-weight: normal; color: var(--text-muted);">
+                        (Cursos asignados a más de 1 carrera)
+                    </span>
+                </h2>
+                <p style="margin-bottom: 1.5rem; color: var(--secondary);">
+                    Aquí puedes elegir qué día y en qué bloque de tiempo se realizarán los exámenes compartidos. 
+                    Si dejas las opciones en "Automático", el sistema buscará el mejor espacio disponible.
+                </p>
+                <div style="overflow-x: auto;">
+                    <table class="manual-table">
+                        <thead>
+                            <tr>
+                                <th>Curso / Materia</th>
+                                <th>Carreras Involucradas</th>
+                                <th>Día del Examen</th>
+                                <th>Bloque de Tiempo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="manualCoursesBody">
+                            <!-- Renderizado por JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. CALENDARIO GENERADO -->
+        <div id="tab-calendar" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <div>
+                    <h2 style="color: var(--primary);">Vista Previa del Calendario</h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">El algoritmo ha distribuido los cursos respetando tus configuraciones.</p>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn btn-primary" onclick="processAndGenerate()">🔄 Regenerar Algoritmo</button>
+                    <button class="btn btn-success" onclick="downloadPDF()">📥 Descargar PDF</button>
+                </div>
+            </div>
+            
+            <div id="pdf-content" class="calendar-wrapper">
+                <div id="calendar-render-area">
+                    <!-- HTML Generado por el algoritmo -->
+                    <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        Haz clic en "Generar Calendario" en la barra superior para procesar los datos.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

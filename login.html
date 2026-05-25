@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login y Registro con Firebase</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f4f9; margin: 0; }
+        .login-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 350px; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px; transition: background 0.3s; }
+        
+        /* Estilos de botones */
+        .btn-login { background-color: #007bff; color: white; }
+        .btn-login:hover { background-color: #0056b3; }
+        
+        .btn-register { background-color: #28a745; color: white; margin-top: 5px; }
+        .btn-register:hover { background-color: #218838; }
+        
+        .btn-google { background-color: #db4437; color: white; }
+        .btn-google:hover { background-color: #c23321; }
+        
+        .divider { margin: 20px 0; border-bottom: 1px solid #ddd; position: relative; }
+        .divider::after { content: "O"; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: white; padding: 0 10px; color: #777; font-size: 14px; }
+        
+        #mensaje { margin-top: 15px; font-size: 14px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h2>Acceso al Sistema</h2>
+    
+    <form id="auth-form">
+        <input type="email" id="email" placeholder="Correo electrónico" required>
+        <input type="password" id="password" placeholder="Contraseña (mín. 6 caracteres)" required>
+        
+        <!-- Botones separados para Iniciar Sesión o Registrarse -->
+        <button type="button" id="btn-login" class="btn-login">Iniciar Sesión</button>
+        <button type="button" id="btn-register" class="btn-register">Crear Cuenta Nueva</button>
+    </form>
+
+    <div class="divider"></div>
+
+    <button id="btn-google" class="btn-google">Continuar con Google</button>
+    
+    <p id="mensaje"></p>
+</div>
+
+<script type="module" src="login_script.js"></script>
+
+</body>
+</html>
