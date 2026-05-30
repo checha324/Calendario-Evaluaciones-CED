@@ -86,13 +86,39 @@ btnRegister.addEventListener('click', () => {
 btnGoogle.addEventListener('click', () => {
     signInWithPopup(auth, providerGoogle)
         .then((result) => {
-            mensaje.style.color = "green";
-            mensaje.textContent = `¡Hola, ${result.user.displayName}!`;
-            window.location.href = "main.html";
-            // Redirigir: window.location.href = "dashboard.html";
+            // Alerta de éxito con SweetAlert
+            Swal.fire({
+                icon: 'success',
+                title: '¡Inicio de sesión exitoso!',
+                text: `¡Hola, ${result.user.displayName}!`,
+                confirmButtonColor: '#007bff'
+            });
+            // window.location.href = "dashboard.html"; // Descomenta esto para redirigir
         })
         .catch((error) => {
-            mensaje.style.color = "red";
-            mensaje.textContent = `Error de Google: ${error.message}`;
+            let mensajeError = "Ocurrió un error al conectar con Google.";
+
+            switch (error.code) {
+                case 'auth/popup-closed-by-user':
+                    mensajeError = "Cancelaste el inicio de sesión antes de terminar.";
+                    break;
+                case 'auth/popup-blocked':
+                    mensajeError = "Tu navegador bloqueó la ventana. Habilita las ventanas emergentes.";
+                    break;
+                case 'auth/cancelled-popup-request':
+                    mensajeError = "Se canceló la solicitud porque abriste otra ventana.";
+                    break;
+                case 'auth/network-request-failed':
+                    mensajeError = "Error de red. Revisa tu conexión a internet.";
+                    break;
+            }
+
+            // Alerta de error con SweetAlert
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: mensajeError,
+                confirmButtonColor: '#db4437'
+            });
         });
 });
